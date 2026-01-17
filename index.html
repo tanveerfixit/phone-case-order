@@ -2,33 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phone Case Inventory Manager</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 p-6">
+<body class="bg-gray-100 p-4 sm:p-6">
 
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">📱 Phone Case Inventory</h1>
-    <button onclick="toggleSettings()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded">
-      ⚙ Settings
-    </button>
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+    <h1 class="text-xl sm:text-2xl font-bold">📱 Phone Case Inventory</h1>
+    <div class="flex gap-2 flex-wrap">
+      <button onclick="saveData()" class="text-sm bg-green-600 text-white px-3 py-1 rounded">💾 Save</button>
+      <button onclick="clearAllData()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">🗑 Clear All</button>
+      <button onclick="toggleSettings()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded">⚙ Settings</button>
+    </div>
   </div>
 
   <!-- Add Phone Model -->
-  <div class="mb-6 flex flex-wrap gap-2 items-center">
-    <input
-      id="newModelInput"
-      type="text"
-      placeholder="Enter phone model (e.g. iPhone 17 Ultra)"
-      class="border rounded px-3 py-2 w-72"
-    />
-    <button onclick="addModel()" class="bg-black text-white px-4 py-2 rounded">
-      Add Model
-    </button>
+  <div class="mb-6 flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
+    <input id="newModelInput" type="text" placeholder="Enter phone model" class="border rounded px-3 py-2 w-full sm:w-72" />
+    <button onclick="addModel()" class="bg-black text-white px-4 py-2 rounded w-full sm:w-auto">Add Model</button>
 
     <!-- Quick Models -->
-    <div class="flex flex-wrap gap-2 ml-2">
+    <div class="flex flex-wrap gap-2">
       <button onclick="quickAdd('Galaxy A16')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A16</button>
       <button onclick="quickAdd('Galaxy A17/A26')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A17/A26</button>
       <button onclick="quickAdd('S24')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24</button>
@@ -46,37 +43,34 @@
   </div>
 
   <!-- Inventory -->
-  <div id="inventory" class="space-y-6"></div>
+  <div id="inventory" class="space-y-4"></div>
 
-  <!-- Generate Order -->
-  <button onclick="generateOrder()" class="mt-6 bg-black text-white px-6 py-2 rounded">
-    Generate Order Sheet
+  <!-- Check Order Button -->
+  <button onclick="checkOrder()" class="mt-6 bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">
+    📦 Check Order
   </button>
 
   <!-- Order Sheet -->
-  <h2 class="text-xl font-bold mt-8">🧾 Order Sheet</h2>
-  <pre id="orderSheet" class="bg-white p-4 mt-2 rounded shadow whitespace-pre-wrap"></pre>
+  <h2 class="text-lg font-bold mt-8">🧾 Order Sheet</h2>
+  <pre id="orderSheet" class="bg-white p-3 mt-2 rounded shadow whitespace-pre-wrap text-sm"></pre>
 
   <!-- Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
-    <div class="bg-white p-6 rounded w-full max-w-md">
+    <div class="bg-white p-4 rounded w-full max-w-md mx-2">
       <h2 class="text-lg font-bold mb-4">⚙ Case Types</h2>
-
       <div class="flex gap-2 mb-4">
         <input id="newCaseInput" type="text" placeholder="New case type" class="border rounded px-3 py-2 flex-1" />
         <button onclick="addCaseType()" class="bg-black text-white px-3 rounded">Add</button>
       </div>
-
-      <ul id="caseList" class="space-y-2 mb-4"></ul>
-
+      <ul id="caseList" class="space-y-2 mb-4 text-sm"></ul>
       <button onclick="toggleSettings()" class="text-sm text-gray-600">Close</button>
     </div>
   </div>
 
 <script>
-  const MIN_STOCK = 1;
+  const MIN_STOCK = 2;
 
-  const cases = [
+  let cases = JSON.parse(localStorage.getItem('cases')) || [
     "Black Skin Feel Ring",
     "Black Skin Feel Stand",
     "Black Skin Feel Camera Stand",
@@ -92,10 +86,28 @@
     "Brown Wallet"
   ];
 
-  const models = [];
-  const stock = {};
+  let models = JSON.parse(localStorage.getItem('models')) || [];
+  let stock = JSON.parse(localStorage.getItem('stock')) || {};
 
   const inventoryDiv = document.getElementById("inventory");
+
+  function saveData() {
+    localStorage.setItem('cases', JSON.stringify(cases));
+    localStorage.setItem('models', JSON.stringify(models));
+    localStorage.setItem('stock', JSON.stringify(stock));
+    alert('Data saved successfully');
+  }
+
+  function clearAllData() {
+    if (!confirm('Delete all saved data?')) return;
+    localStorage.clear();
+    cases = [];
+    models = [];
+    stock = {};
+    renderInventory();
+    renderCaseList();
+    document.getElementById('orderSheet').textContent = '';
+  }
 
   function toggleSettings() {
     document.getElementById("settingsModal").classList.toggle("hidden");
@@ -103,105 +115,90 @@
   }
 
   function addModel() {
-    const modelName = document.getElementById("newModelInput").value.trim();
-    if (!modelName || models.includes(modelName)) return;
-
-    models.push(modelName);
-    stock[modelName] = {};
-    cases.forEach(c => stock[modelName][c] = 2);
-
-    document.getElementById("newModelInput").value = "";
+    const name = newModelInput.value.trim();
+    if (!name || models.includes(name)) return;
+    models.push(name);
+    stock[name] = {};
+    cases.forEach(c => stock[name][c] = 2);
+    newModelInput.value = '';
     renderInventory();
   }
 
-  function quickAdd(modelName) {
-    if (models.includes(modelName)) return;
-    models.push(modelName);
-    stock[modelName] = {};
-    cases.forEach(c => stock[modelName][c] = 2);
+  function quickAdd(name) {
+    if (models.includes(name)) return;
+    models.push(name);
+    stock[name] = {};
+    cases.forEach(c => stock[name][c] = 2);
     renderInventory();
   }
 
   function addCaseType() {
-    const caseName = document.getElementById("newCaseInput").value.trim();
-    if (!caseName || cases.includes(caseName)) return;
-
-    cases.push(caseName);
-    models.forEach(m => stock[m][caseName] = 2);
-
-    document.getElementById("newCaseInput").value = "";
+    const name = newCaseInput.value.trim();
+    if (!name || cases.includes(name)) return;
+    cases.push(name);
+    models.forEach(m => stock[m][name] = 2);
+    newCaseInput.value = '';
     renderCaseList();
     renderInventory();
   }
 
-  function removeCaseType(caseName) {
-    const index = cases.indexOf(caseName);
-    if (index === -1) return;
-
-    cases.splice(index, 1);
-    models.forEach(m => delete stock[m][caseName]);
-
+  function removeCaseType(name) {
+    cases = cases.filter(c => c !== name);
+    models.forEach(m => delete stock[m][name]);
     renderCaseList();
     renderInventory();
   }
 
   function renderCaseList() {
-    const list = document.getElementById("caseList");
-    list.innerHTML = "";
-
+    const list = document.getElementById('caseList');
+    list.innerHTML = '';
     cases.forEach(c => {
-      const li = document.createElement("li");
-      li.className = "flex justify-between items-center text-sm";
-      li.innerHTML = `
-        <span>${c}</span>
-        <button onclick="removeCaseType('${c}')" class="text-red-600">Remove</button>
-      `;
-      list.appendChild(li);
+      list.innerHTML += `<li class="flex justify-between"><span>${c}</span><button class="text-red-600" onclick="removeCaseType('${c}')">Remove</button></li>`;
     });
   }
 
   function renderInventory() {
-    inventoryDiv.innerHTML = "";
-
-    models.forEach(model => {
-      const section = document.createElement("div");
-      section.className = "bg-white p-4 rounded shadow";
-
-      section.innerHTML = `
-        <h2 class="text-lg font-bold mb-3">${model}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-          ${cases.map(c => `
-            <div class="flex justify-between items-center">
-              <span class="text-sm">${c}</span>
-              <input type="number" min="0" value="${stock[model][c] ?? 2}" class="w-16 border rounded px-2 py-1"
-                onchange="stock['${model}']['${c}'] = parseInt(this.value)" />
-            </div>
-          `).join("")}
-        </div>
-      `;
-
-      inventoryDiv.appendChild(section);
+    inventoryDiv.innerHTML = '';
+    models.forEach(m => {
+      inventoryDiv.innerHTML += `
+        <div class="bg-white p-3 rounded shadow">
+          <h3 class="font-bold mb-2">${m}</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${cases.map(c => `
+              <div class="flex justify-between items-center text-sm">
+                <span>${c}</span>
+                <input type="number" min="0" value="${stock[m][c] ?? 2}" class="w-16 border rounded px-2"
+                  onchange="stock['${m}']['${c}'] = parseInt(this.value)" />
+              </div>`).join('')}
+          </div>
+        </div>`;
     });
   }
 
-  function generateOrder() {
-    let output = "";
-    let hasOrders = false;
+  function checkOrder() {
+    let output = '';
+    let hasOrder = false;
 
-    models.forEach(model => {
+    models.forEach(m => {
       cases.forEach(c => {
-        const qty = stock[model][c];
-        if (qty <= MIN_STOCK) {
-          const orderQty = qty === 0 ? 5 : 3;
-          output += `${model} | ${c} → Order ${orderQty}\n`;
-          hasOrders = true;
+        const available = stock[m][c] ?? 0;
+
+        if (available === 0) {
+          output += `${m} | ${c} → Order 3\n`;
+          hasOrder = true;
+        } else if (available === 1 || available === 2) {
+          output += `${m} | ${c} → Order 2\n`;
+          hasOrder = true;
         }
       });
     });
 
-    document.getElementById("orderSheet").textContent =
-      hasOrders ? output : "✅ All stock levels are healthy.";
+    document.getElementById('orderSheet').textContent = hasOrder
+      ? output
+      : '✅ All stock levels are healthy.';
   }
+
+  renderInventory();
 </script>
 
 </body>
