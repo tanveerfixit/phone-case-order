@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phone Case Inventory Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">📱 Phone Case Inventory</h1>
+    <button onclick="toggleSettings()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded">
+      ⚙ Settings
+    </button>
+  </div>
+
+  <!-- Add Phone Model -->
+  <div class="mb-6 flex flex-wrap gap-2 items-center">
+    <input
+      id="newModelInput"
+      type="text"
+      placeholder="Enter phone model (e.g. iPhone 17 Ultra)"
+      class="border rounded px-3 py-2 w-72"
+    />
+    <button onclick="addModel()" class="bg-black text-white px-4 py-2 rounded">
+      Add Model
+    </button>
+
+    <!-- Quick Models -->
+    <div class="flex flex-wrap gap-2 ml-2">
+      <button onclick="quickAdd('Galaxy A16')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A16</button>
+      <button onclick="quickAdd('Galaxy A17/A26')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A17/A26</button>
+      <button onclick="quickAdd('S24')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24</button>
+      <button onclick="quickAdd('S24 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 FE</button>
+      <button onclick="quickAdd('S24 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 Ultra</button>
+      <button onclick="quickAdd('S25')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25</button>
+      <button onclick="quickAdd('S25 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 FE</button>
+      <button onclick="quickAdd('S25 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 Ultra</button>
+      <button onclick="quickAdd('iPhone 13')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 13</button>
+      <button onclick="quickAdd('iPhone 14')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 14</button>
+      <button onclick="quickAdd('iPhone 15')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 15</button>
+      <button onclick="quickAdd('iPhone 16')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 16</button>
+      <button onclick="quickAdd('iPhone 17')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 17</button>
+    </div>
+  </div>
+
+  <!-- Inventory -->
+  <div id="inventory" class="space-y-6"></div>
+
+  <!-- Generate Order -->
+  <button onclick="generateOrder()" class="mt-6 bg-black text-white px-6 py-2 rounded">
+    Generate Order Sheet
+  </button>
+
+  <!-- Order Sheet -->
+  <h2 class="text-xl font-bold mt-8">🧾 Order Sheet</h2>
+  <pre id="orderSheet" class="bg-white p-4 mt-2 rounded shadow whitespace-pre-wrap"></pre>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
+    <div class="bg-white p-6 rounded w-full max-w-md">
+      <h2 class="text-lg font-bold mb-4">⚙ Case Types</h2>
+
+      <div class="flex gap-2 mb-4">
+        <input id="newCaseInput" type="text" placeholder="New case type" class="border rounded px-3 py-2 flex-1" />
+        <button onclick="addCaseType()" class="bg-black text-white px-3 rounded">Add</button>
+      </div>
+
+      <ul id="caseList" class="space-y-2 mb-4"></ul>
+
+      <button onclick="toggleSettings()" class="text-sm text-gray-600">Close</button>
+    </div>
+  </div>
+
+<script>
+  const MIN_STOCK = 1;
+
+  const cases = [
+    "Black Skin Feel Ring",
+    "Black Skin Feel Stand",
+    "Black Skin Feel Camera Stand",
+    "MagSafe Clear Case",
+    "Clear Gorilla",
+    "Black Dual Layer Invisible Ring Case",
+    "Blue Dual Layer Invisible Ring Case",
+    "Pink Dual Layer Invisible Ring Case",
+    "Silver Dual Layer Invisible Ring Case",
+    "Red Dual Layer Invisible Ring Case",
+    "Clear HeavyDuty Axis Design",
+    "Black Wallet",
+    "Brown Wallet"
+  ];
+
+  const models = [];
+  const stock = {};
+
+  const inventoryDiv = document.getElementById("inventory");
+
+  function toggleSettings() {
+    document.getElementById("settingsModal").classList.toggle("hidden");
+    renderCaseList();
+  }
+
+  function addModel() {
+    const modelName = document.getElementById("newModelInput").value.trim();
+    if (!modelName || models.includes(modelName)) return;
+
+    models.push(modelName);
+    stock[modelName] = {};
+    cases.forEach(c => stock[modelName][c] = 2);
+
+    document.getElementById("newModelInput").value = "";
+    renderInventory();
+  }
+
+  function quickAdd(modelName) {
+    if (models.includes(modelName)) return;
+    models.push(modelName);
+    stock[modelName] = {};
+    cases.forEach(c => stock[modelName][c] = 2);
+    renderInventory();
+  }
+
+  function addCaseType() {
+    const caseName = document.getElementById("newCaseInput").value.trim();
+    if (!caseName || cases.includes(caseName)) return;
+
+    cases.push(caseName);
+    models.forEach(m => stock[m][caseName] = 2);
+
+    document.getElementById("newCaseInput").value = "";
+    renderCaseList();
+    renderInventory();
+  }
+
+  function removeCaseType(caseName) {
+    const index = cases.indexOf(caseName);
+    if (index === -1) return;
+
+    cases.splice(index, 1);
+    models.forEach(m => delete stock[m][caseName]);
+
+    renderCaseList();
+    renderInventory();
+  }
+
+  function renderCaseList() {
+    const list = document.getElementById("caseList");
+    list.innerHTML = "";
+
+    cases.forEach(c => {
+      const li = document.createElement("li");
+      li.className = "flex justify-between items-center text-sm";
+      li.innerHTML = `
+        <span>${c}</span>
+        <button onclick="removeCaseType('${c}')" class="text-red-600">Remove</button>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function renderInventory() {
+    inventoryDiv.innerHTML = "";
+
+    models.forEach(model => {
+      const section = document.createElement("div");
+      section.className = "bg-white p-4 rounded shadow";
+
+      section.innerHTML = `
+        <h2 class="text-lg font-bold mb-3">${model}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          ${cases.map(c => `
+            <div class="flex justify-between items-center">
+              <span class="text-sm">${c}</span>
+              <input type="number" min="0" value="${stock[model][c] ?? 2}" class="w-16 border rounded px-2 py-1"
+                onchange="stock['${model}']['${c}'] = parseInt(this.value)" />
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      inventoryDiv.appendChild(section);
+    });
+  }
+
+  function generateOrder() {
+    let output = "";
+    let hasOrders = false;
+
+    models.forEach(model => {
+      cases.forEach(c => {
+        const qty = stock[model][c];
+        if (qty <= MIN_STOCK) {
+          const orderQty = qty === 0 ? 5 : 3;
+          output += `${model} | ${c} → Order ${orderQty}\n`;
+          hasOrders = true;
+        }
+      });
+    });
+
+    document.getElementById("orderSheet").textContent =
+      hasOrders ? output : "✅ All stock levels are healthy.";
+  }
+</script>
+
+</body>
+</html>
