@@ -57,9 +57,9 @@
   <!-- Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
     <div class="bg-white p-4 rounded w-full max-w-md mx-2">
-      <h2 class="text-lg font-bold mb-4">⚙ Case Types</h2>
+      <h2 class="text-lg font-bold mb-4">⚙ Case Styles</h2>
       <div class="flex gap-2 mb-4">
-        <input id="newCaseInput" type="text" placeholder="New case type" class="border rounded px-3 py-2 flex-1" />
+        <input id="newCaseInput" type="text" placeholder="New case style" class="border rounded px-3 py-2 flex-1" />
         <button onclick="addCaseType()" class="bg-black text-white px-3 rounded">Add</button>
       </div>
       <ul id="caseList" class="space-y-2 mb-4 text-sm"></ul>
@@ -68,23 +68,23 @@
   </div>
 
 <script>
-  const MIN_STOCK = 2;
-
   let cases = JSON.parse(localStorage.getItem('cases')) || [
-    "Black Skin Feel Ring",
-    "Black Skin Feel Stand",
-    "Black Skin Feel Camera Stand",
-    "MagSafe Clear Case",
-    "Clear Gorilla",
-    "Black Dual Layer Invisible Ring Case",
-    "Blue Dual Layer Invisible Ring Case",
-    "Pink Dual Layer Invisible Ring Case",
-    "Silver Dual Layer Invisible Ring Case",
-    "Red Dual Layer Invisible Ring Case",
-    "Clear HeavyDuty Axis Design",
-    "Black Wallet",
-    "Brown Wallet"
-  ];
+  { name: "Black Skin Feel Ring", enabled: true },
+  { name: "Black Skin Feel Stand", enabled: true },
+  { name: "Black Skin Feel Camera Stand", enabled: true },
+  { name: "MagSafe Clear Case", enabled: true },
+  { name: "Clear Gorilla", enabled: true },
+  { name: "Black Dual Layer Invisible Ring Case", enabled: true },
+  { name: "Blue Dual Layer Invisible Ring Case", enabled: true },
+  { name: "Pink Dual Layer Invisible Ring Case", enabled: true },
+  { name: "Silver Dual Layer Invisible Ring Case", enabled: false},
+  { name: "Red Dual Layer Invisible Ring Case", enabled: true },
+  { name: "Clear HeavyDuty Axis Design", enabled: true },
+  { name: "Black Wallet", enabled: true },
+  { name: "Brown Wallet", enabled: true },
+  { name: "Black Triple Builder", enabled: true },
+  { name: "Axis Exploiter Case Black", enabled: true }
+];
 
   let models = JSON.parse(localStorage.getItem('models')) || [];
   let stock = JSON.parse(localStorage.getItem('stock')) || {};
@@ -101,12 +101,7 @@
   function clearAllData() {
     if (!confirm('Delete all saved data?')) return;
     localStorage.clear();
-    cases = [];
-    models = [];
-    stock = {};
-    renderInventory();
-    renderCaseList();
-    document.getElementById('orderSheet').textContent = '';
+    location.reload();
   }
 
   function toggleSettings() {
@@ -119,7 +114,7 @@
     if (!name || models.includes(name)) return;
     models.push(name);
     stock[name] = {};
-    cases.forEach(c => stock[name][c] = 0);
+    cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
     newModelInput.value = '';
     renderInventory();
   }
@@ -128,23 +123,16 @@
     if (models.includes(name)) return;
     models.push(name);
     stock[name] = {};
-    cases.forEach(c => stock[name][c] = 0);
+    cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
     renderInventory();
   }
 
   function addCaseType() {
     const name = newCaseInput.value.trim();
-    if (!name || cases.includes(name)) return;
-    cases.push(name);
+    if (!name || cases.find(c => c.name === name)) return;
+    cases.push({ name, enabled: true });
     models.forEach(m => stock[m][name] = 0);
     newCaseInput.value = '';
-    renderCaseList();
-    renderInventory();
-  }
-
-  function removeCaseType(name) {
-    cases = cases.filter(c => c !== name);
-    models.forEach(m => delete stock[m][name]);
     renderCaseList();
     renderInventory();
   }
@@ -152,8 +140,15 @@
   function renderCaseList() {
     const list = document.getElementById('caseList');
     list.innerHTML = '';
-    cases.forEach(c => {
-      list.innerHTML += `<li class="flex justify-between"><span>${c}</span><button class="text-red-600" onclick="removeCaseType('${c}')">Remove</button></li>`;
+    cases.forEach((c, index) => {
+      list.innerHTML += `
+        <li class="flex items-center justify-between">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" ${c.enabled ? 'checked' : ''}
+              onchange="cases[${index}].enabled = this.checked; renderInventory();" />
+            <span>${c.name}</span>
+          </label>
+        </li>`;
     });
   }
 
@@ -164,14 +159,14 @@
         <div class="bg-white p-3 rounded shadow">
           <h3 class="font-bold mb-2">${m}</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            ${cases.map(c => `
+            ${cases.filter(c => c.enabled).map(c => `
               <div class="flex justify-between items-center text-sm">
-                <span>${c}</span>
+                <span>${c.name}</span>
                 <div class="flex items-center gap-1">
-                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c}'] = Math.max(0, (stock['${m}']['${c}'] || 0) - 1); renderInventory();">−</button>
-                  <input type="number" min="0" value="${stock[m][c] ?? 0}" class="w-14 text-center border rounded px-1"
-                    onchange="stock['${m}']['${c}'] = parseInt(this.value) || 0" />
-                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c}'] = (stock['${m}']['${c}'] || 0) + 1; renderInventory();">+</button>
+                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c.name}'] = Math.max(0, (stock['${m}']['${c.name}'] || 0) - 1); renderInventory();">−</button>
+                  <input type="number" min="0" value="${stock[m][c.name] ?? 0}" class="w-14 text-center border rounded px-1"
+                    onchange="stock['${m}']['${c.name}'] = parseInt(this.value) || 0" />
+                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c.name}'] = (stock['${m}']['${c.name}'] || 0) + 1; renderInventory();">+</button>
                 </div>
               </div>`).join('')}
           </div>
@@ -184,14 +179,13 @@
     let hasOrder = false;
 
     models.forEach(m => {
-      cases.forEach(c => {
-        const available = stock[m][c] ?? 0;
-
+      cases.filter(c => c.enabled).forEach(c => {
+        const available = stock[m][c.name] ?? 0;
         if (available === 0) {
-          output += `${m} | ${c} → Order 3\n`;
+          output += `${m} | ${c.name} → Order 3\n`;
           hasOrder = true;
         } else if (available === 1 || available === 2) {
-          output += `${m} | ${c} → Order 2\n`;
+          output += `${m} | ${c.name} → Order 2\n`;
           hasOrder = true;
         }
       });
