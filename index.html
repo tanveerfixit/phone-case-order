@@ -9,66 +9,90 @@
 
 <body class="bg-gray-100 p-4 sm:p-6">
 
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-    <h1 class="text-xl sm:text-2xl font-bold">📱 Phone Case Inventory</h1>
-    <div class="flex gap-2 flex-wrap">
-      <button onclick="saveData()" class="text-sm bg-green-600 text-white px-3 py-1 rounded">💾 Save</button>
-      <button onclick="clearAllData()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">🗑 Clear All</button>
-      <button onclick="toggleSettings()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded">⚙ Settings</button>
-    </div>
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+  <h1 class="text-xl sm:text-2xl font-bold">📱 Phone Case Inventory</h1>
+  <div class="flex gap-2 flex-wrap">
+    <button onclick="saveData()" class="text-sm bg-green-600 text-white px-3 py-1 rounded">💾 Save</button>
+    <button onclick="clearAllData()" class="text-sm bg-red-600 text-white px-3 py-1 rounded">🗑 Clear All</button>
+    <button onclick="toggleSettings()" class="text-sm bg-gray-800 text-white px-3 py-1 rounded">⚙ Settings</button>
   </div>
+</div>
 
-  <!-- Add Phone Model -->
-  <div class="mb-6 flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
-    <input id="newModelInput" type="text" placeholder="Enter phone model" class="border rounded px-3 py-2 w-full sm:w-72" />
-    <button onclick="addModel()" class="bg-black text-white px-4 py-2 rounded w-full sm:w-auto">Add Model</button>
-
-    <!-- Quick Models -->
-    <div class="flex flex-wrap gap-2">
-      <button onclick="quickAdd('Galaxy A16')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A16</button>
-      <button onclick="quickAdd('Galaxy A17/A26')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A17/A26</button>
-      <button onclick="quickAdd('S24')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24</button>
-      <button onclick="quickAdd('S24 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 FE</button>
-      <button onclick="quickAdd('S24 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 Ultra</button>
-      <button onclick="quickAdd('S25')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25</button>
-      <button onclick="quickAdd('S25 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 FE</button>
-      <button onclick="quickAdd('S25 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 Ultra</button>
-      <button onclick="quickAdd('iPhone 13')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 13</button>
-      <button onclick="quickAdd('iPhone 14')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 14</button>
-      <button onclick="quickAdd('iPhone 15')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 15</button>
-      <button onclick="quickAdd('iPhone 16')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 16</button>
-      <button onclick="quickAdd('iPhone 17')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 17</button>
-    </div>
-  </div>
-
-  <!-- Inventory -->
-  <div id="inventory" class="space-y-4"></div>
-
-  <!-- Check Order Button -->
-  <button onclick="checkOrder()" class="mt-6 bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">
-    📦 Check Order
+<!-- Add Phone Model -->
+<div class="mb-6 flex flex-col sm:flex-row flex-wrap gap-2 items-start sm:items-center">
+  <input id="newModelInput" type="text" placeholder="Enter phone model"
+    class="border rounded px-3 py-2 w-full sm:w-72" />
+  <button onclick="addModel()" class="bg-black text-white px-4 py-2 rounded w-full sm:w-auto">
+    Add Model
   </button>
 
-  <!-- Order Sheet -->
-  <h2 class="text-lg font-bold mt-8">🧾 Order Sheet</h2>
-  <pre id="orderSheet" class="bg-white p-3 mt-2 rounded shadow whitespace-pre-wrap text-sm"></pre>
-
-  <!-- Settings Modal -->
-  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
-    <div class="bg-white p-4 rounded w-full max-w-md mx-2">
-      <h2 class="text-lg font-bold mb-4">⚙ Case Styles</h2>
-      <div class="flex gap-2 mb-4">
-        <input id="newCaseInput" type="text" placeholder="New case style" class="border rounded px-3 py-2 flex-1" />
-        <button onclick="addCaseType()" class="bg-black text-white px-3 rounded">Add</button>
-      </div>
-      <ul id="caseList" class="space-y-2 mb-4 text-sm"></ul>
-      <button onclick="toggleSettings()" class="text-sm text-gray-600">Close</button>
-    </div>
+  <!-- Quick Models -->
+  <div class="flex flex-wrap gap-2">
+    <button onclick="quickAdd('Galaxy A16')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A16</button>
+    <button onclick="quickAdd('Galaxy A17/A26')" class="text-xs bg-gray-200 px-2 py-1 rounded">Galaxy A17/A26</button>
+    <button onclick="quickAdd('S24')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24</button>
+    <button onclick="quickAdd('S24 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 FE</button>
+    <button onclick="quickAdd('S24 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S24 Ultra</button>
+    <button onclick="quickAdd('S25')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25</button>
+    <button onclick="quickAdd('S25 FE')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 FE</button>
+    <button onclick="quickAdd('S25 Ultra')" class="text-xs bg-gray-200 px-2 py-1 rounded">S25 Ultra</button>
+    <button onclick="quickAdd('iPhone 13')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 13</button>
+    <button onclick="quickAdd('iPhone 14')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 14</button>
+    <button onclick="quickAdd('iPhone 15')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 15</button>
+    <button onclick="quickAdd('iPhone 16')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 16</button>
+    <button onclick="quickAdd('iPhone 17')" class="text-xs bg-gray-200 px-2 py-1 rounded">iPhone 17</button>
   </div>
+</div>
+
+<!-- Inventory -->
+<div id="inventory" class="space-y-4"></div>
+
+<!-- Actions -->
+<button onclick="checkOrder()" class="mt-6 bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto">
+  📦 Check Order
+</button>
+
+<div class="mt-4 flex flex-col sm:flex-row gap-2">
+  <button onclick="downloadAvailableStock()"
+    class="bg-purple-600 text-white px-4 py-2 rounded">
+    ⬇ Download Available Stock
+  </button>
+
+  <button onclick="shareStockReport()"
+    class="bg-teal-600 text-white px-4 py-2 rounded">
+    📤 Share Stock Report
+  </button>
+</div>
+
+<!-- Order Sheet -->
+<h2 class="text-lg font-bold mt-8">🧾 Order Sheet</h2>
+<pre id="orderSheet"
+  class="bg-white p-3 mt-2 rounded shadow whitespace-pre-wrap text-sm"></pre>
+
+<!-- Settings Modal -->
+<div id="settingsModal"
+  class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
+  <div class="bg-white p-4 rounded w-full max-w-md mx-2">
+    <h2 class="text-lg font-bold mb-4">⚙ Case Styles</h2>
+
+    <div class="flex gap-2 mb-4">
+      <input id="newCaseInput" type="text" placeholder="New case style"
+        class="border rounded px-3 py-2 flex-1" />
+      <button onclick="addCaseType()" class="bg-black text-white px-3 rounded">
+        Add
+      </button>
+    </div>
+
+    <ul id="caseList" class="space-y-2 mb-4 text-sm"></ul>
+
+    <button onclick="toggleSettings()" class="text-sm text-gray-600">Close</button>
+  </div>
+</div>
 
 <script>
-  let cases = JSON.parse(localStorage.getItem('cases')) || [
+/* ===== DATA ===== */
+let cases = JSON.parse(localStorage.getItem('cases')) || [
   { name: "Black Skin Feel Ring", enabled: true },
   { name: "Black Skin Feel Stand", enabled: true },
   { name: "Black Skin Feel Camera Stand", enabled: true },
@@ -77,7 +101,7 @@
   { name: "Black Dual Layer Invisible Ring Case", enabled: true },
   { name: "Blue Dual Layer Invisible Ring Case", enabled: true },
   { name: "Pink Dual Layer Invisible Ring Case", enabled: true },
-  { name: "Silver Dual Layer Invisible Ring Case", enabled: false},
+  { name: "Silver Dual Layer Invisible Ring Case", enabled: false },
   { name: "Red Dual Layer Invisible Ring Case", enabled: true },
   { name: "Clear HeavyDuty Axis Design", enabled: true },
   { name: "Black Wallet", enabled: true },
@@ -86,117 +110,158 @@
   { name: "Axis Exploiter Case Black", enabled: true }
 ];
 
-  let models = JSON.parse(localStorage.getItem('models')) || [];
-  let stock = JSON.parse(localStorage.getItem('stock')) || {};
+let models = JSON.parse(localStorage.getItem('models')) || [];
+let stock = JSON.parse(localStorage.getItem('stock')) || {};
+const inventoryDiv = document.getElementById("inventory");
 
-  const inventoryDiv = document.getElementById("inventory");
+/* ===== CORE FUNCTIONS ===== */
+function saveData() {
+  localStorage.setItem('cases', JSON.stringify(cases));
+  localStorage.setItem('models', JSON.stringify(models));
+  localStorage.setItem('stock', JSON.stringify(stock));
+  alert('Data saved successfully');
+}
 
-  function saveData() {
-    localStorage.setItem('cases', JSON.stringify(cases));
-    localStorage.setItem('models', JSON.stringify(models));
-    localStorage.setItem('stock', JSON.stringify(stock));
-    alert('Data saved successfully');
-  }
+function clearAllData() {
+  if (!confirm('Delete all saved data?')) return;
+  localStorage.clear();
+  location.reload();
+}
 
-  function clearAllData() {
-    if (!confirm('Delete all saved data?')) return;
-    localStorage.clear();
-    location.reload();
-  }
+function toggleSettings() {
+  document.getElementById("settingsModal").classList.toggle("hidden");
+  renderCaseList();
+}
 
-  function toggleSettings() {
-    document.getElementById("settingsModal").classList.toggle("hidden");
-    renderCaseList();
-  }
-
-  function addModel() {
-    const name = newModelInput.value.trim();
-    if (!name || models.includes(name)) return;
-    models.push(name);
-    stock[name] = {};
-    cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
-    newModelInput.value = '';
-    renderInventory();
-  }
-
-  function quickAdd(name) {
-    if (models.includes(name)) return;
-    models.push(name);
-    stock[name] = {};
-    cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
-    renderInventory();
-  }
-
-  function addCaseType() {
-    const name = newCaseInput.value.trim();
-    if (!name || cases.find(c => c.name === name)) return;
-    cases.push({ name, enabled: true });
-    models.forEach(m => stock[m][name] = 0);
-    newCaseInput.value = '';
-    renderCaseList();
-    renderInventory();
-  }
-
-  function renderCaseList() {
-    const list = document.getElementById('caseList');
-    list.innerHTML = '';
-    cases.forEach((c, index) => {
-      list.innerHTML += `
-        <li class="flex items-center justify-between">
-          <label class="flex items-center gap-2">
-            <input type="checkbox" ${c.enabled ? 'checked' : ''}
-              onchange="cases[${index}].enabled = this.checked; renderInventory();" />
-            <span>${c.name}</span>
-          </label>
-        </li>`;
-    });
-  }
-
-  function renderInventory() {
-    inventoryDiv.innerHTML = '';
-    models.forEach(m => {
-      inventoryDiv.innerHTML += `
-        <div class="bg-white p-3 rounded shadow">
-          <h3 class="font-bold mb-2">${m}</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            ${cases.filter(c => c.enabled).map(c => `
-              <div class="flex justify-between items-center text-sm">
-                <span>${c.name}</span>
-                <div class="flex items-center gap-1">
-                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c.name}'] = Math.max(0, (stock['${m}']['${c.name}'] || 0) - 1); renderInventory();">−</button>
-                  <input type="number" min="0" value="${stock[m][c.name] ?? 0}" class="w-14 text-center border rounded px-1"
-                    onchange="stock['${m}']['${c.name}'] = parseInt(this.value) || 0" />
-                  <button class="px-2 py-1 bg-gray-200 rounded" onclick="stock['${m}']['${c.name}'] = (stock['${m}']['${c.name}'] || 0) + 1; renderInventory();">+</button>
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`;
-    });
-  }
-
-  function checkOrder() {
-    let output = '';
-    let hasOrder = false;
-
-    models.forEach(m => {
-      cases.filter(c => c.enabled).forEach(c => {
-        const available = stock[m][c.name] ?? 0;
-        if (available === 0) {
-          output += `${m} | ${c.name} → Order 3\n`;
-          hasOrder = true;
-        } else if (available === 1 || available === 2) {
-          output += `${m} | ${c.name} → Order 2\n`;
-          hasOrder = true;
-        }
-      });
-    });
-
-    document.getElementById('orderSheet').textContent = hasOrder
-      ? output
-      : '✅ All stock levels are healthy.';
-  }
-
+function addModel() {
+  const name = newModelInput.value.trim();
+  if (!name || models.includes(name)) return;
+  models.push(name);
+  stock[name] = {};
+  cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
+  newModelInput.value = '';
   renderInventory();
+}
+
+function quickAdd(name) {
+  if (models.includes(name)) return;
+  models.push(name);
+  stock[name] = {};
+  cases.filter(c => c.enabled).forEach(c => stock[name][c.name] = 0);
+  renderInventory();
+}
+
+function addCaseType() {
+  const name = newCaseInput.value.trim();
+  if (!name || cases.find(c => c.name === name)) return;
+  cases.push({ name, enabled: true });
+  models.forEach(m => stock[m][name] = 0);
+  newCaseInput.value = '';
+  renderCaseList();
+  renderInventory();
+}
+
+function renderCaseList() {
+  caseList.innerHTML = '';
+  cases.forEach((c, i) => {
+    caseList.innerHTML += `
+      <li class="flex items-center gap-2">
+        <input type="checkbox" ${c.enabled ? 'checked' : ''}
+          onchange="cases[${i}].enabled=this.checked; renderInventory()">
+        ${c.name}
+      </li>`;
+  });
+}
+
+function renderInventory() {
+  inventoryDiv.innerHTML = '';
+  models.forEach(m => {
+    inventoryDiv.innerHTML += `
+      <div class="bg-white p-3 rounded shadow">
+        <h3 class="font-bold mb-2">${m}</h3>
+        <div class="grid sm:grid-cols-2 gap-2">
+        ${cases.filter(c => c.enabled).map(c => `
+          <div class="flex justify-between items-center text-sm">
+            <span>${c.name}</span>
+            <div class="flex gap-1 items-center">
+              <button class="px-2 bg-gray-200 rounded"
+                onclick="stock['${m}']['${c.name}']=Math.max(0,(stock['${m}']['${c.name}']||0)-1); renderInventory()">−</button>
+              <input type="number" min="0" class="w-14 border text-center"
+                value="${stock[m][c.name] ?? 0}"
+                onchange="stock['${m}']['${c.name}']=parseInt(this.value)||0">
+              <button class="px-2 bg-gray-200 rounded"
+                onclick="stock['${m}']['${c.name}']=(stock['${m}']['${c.name}']||0)+1; renderInventory()">+</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+  });
+}
+
+function checkOrder() {
+  let output = '';
+  let hasOrder = false;
+
+  models.forEach(m => {
+    cases.filter(c => c.enabled).forEach(c => {
+      const qty = stock[m][c.name] ?? 0;
+      if (qty === 0) {
+        output += `${m} | ${c.name} → Order 3\n`;
+        hasOrder = true;
+      } else if (qty === 1 || qty === 2) {
+        output += `${m} | ${c.name} → Order 2\n`;
+        hasOrder = true;
+      }
+    });
+  });
+
+  orderSheet.textContent = hasOrder ? output : '✅ All stock levels are healthy.';
+}
+
+/* ===== NEW FEATURES (ONLY ADDITION) ===== */
+function generateAvailableStockText() {
+  let text = '📦 AVAILABLE STOCK\n\n';
+  models.forEach(m => {
+    let block = '';
+    cases.filter(c => c.enabled).forEach(c => {
+      const q = stock[m][c.name] ?? 0;
+      if (q > 0) block += `  • ${c.name}: ${q}\n`;
+    });
+    if (block) text += `${m}\n${block}\n`;
+  });
+  return text.trim() || 'No available stock';
+}
+
+function generateOrderText() {
+  let text = '🧾 ORDER LIST\n\n';
+  models.forEach(m => {
+    cases.filter(c => c.enabled).forEach(c => {
+      const q = stock[m][c.name] ?? 0;
+      if (q <= 2) text += `${m} | ${c.name} → Order ${q === 0 ? 3 : 2}\n`;
+    });
+  });
+  return text.trim() || 'No orders required';
+}
+
+function downloadAvailableStock() {
+  const blob = new Blob([generateAvailableStockText()], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'available_stock.txt';
+  a.click();
+}
+
+async function shareStockReport() {
+  const text = generateAvailableStockText() + '\n\n' + generateOrderText();
+  if (navigator.share) {
+    await navigator.share({ title: 'Phone Case Stock Report', text });
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert('Stock report copied to clipboard');
+  }
+}
+
+renderInventory();
 </script>
 
 </body>
